@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-rephonic.rephonic",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Marketing & Content"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://rephonic.com/developers"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/getrephonic/n8n-nodes-rephonic#readme"
+			}
+		]
+	}
+}

@@ -1,0 +1,88 @@
+{
+	"name": "Rephonic: research podcasts",
+	"nodes": [
+		{
+			"parameters": {},
+			"id": "manual-start",
+			"name": "Start",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [0, 0]
+		},
+		{
+			"parameters": {
+				"resource": "podcast",
+				"operation": "getMany",
+				"query": "climate",
+				"mode": "topics",
+				"filters": "active:is:true,languages:any:en",
+				"returnAll": false,
+				"limit": 3,
+				"output": "raw"
+			},
+			"id": "search",
+			"name": "Find podcasts",
+			"type": "n8n-nodes-rephonic.rephonic",
+			"typeVersion": 1,
+			"position": [280, 0]
+		},
+		{
+			"parameters": {
+				"resource": "podcast",
+				"operation": "get",
+				"podcastId": "={{$json.id}}",
+				"output": "simplified"
+			},
+			"id": "details",
+			"name": "Get podcast details",
+			"type": "n8n-nodes-rephonic.rephonic",
+			"typeVersion": 1,
+			"position": [560, 0]
+		},
+		{
+			"parameters": {
+				"resource": "account",
+				"operation": "getQuota"
+			},
+			"id": "quota",
+			"name": "Check API quota",
+			"type": "n8n-nodes-rephonic.rephonic",
+			"typeVersion": 1,
+			"position": [280, 240]
+		}
+	],
+	"connections": {
+		"Start": {
+			"main": [
+				[
+					{
+						"node": "Find podcasts",
+						"type": "main",
+						"index": 0
+					},
+					{
+						"node": "Check API quota",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Find podcasts": {
+			"main": [
+				[
+					{
+						"node": "Get podcast details",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"active": false,
+	"pinData": {}
+}

@@ -1,0 +1,22 @@
+{
+	"slug": "rephonic",
+	"brand": "Rephonic",
+	"entity": "podcast",
+	"apiEntity": "podcast",
+	"plural": "podcasts",
+	"record": {
+		"id": "example-podcast",
+		"name": "Example Podcast",
+		"description": null,
+		"language": "en",
+		"engagement": 0,
+		"largeFixtureField": {
+			"nested": "deliberately not simplified"
+		},
+		"web_url": "https://example.com/podcast",
+		"downloads_per_episode": 0,
+		"est_weekly_downloads": 0,
+		"active": false,
+		"email": null
+	}
+}
