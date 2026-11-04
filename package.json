@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-rephonic",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Rephonic nodes for n8n: search podcasts, get podcast details, and check API quota",
 	"license": "MIT",
 	"homepage": "https://rephonic.com",

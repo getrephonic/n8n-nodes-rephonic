@@ -1,5 +1,6 @@
 import { NodeConnectionTypes, type INodeType, type INodeTypeDescription } from 'n8n-workflow';
 import { formatOutput } from './output';
+import { applySearchFilters } from './search';
 
 export class Rephonic implements INodeType {
 	description: INodeTypeDescription = {
@@ -7,7 +8,7 @@ export class Rephonic implements INodeType {
 		name: 'rephonic',
 		icon: { light: 'file:../../icons/rephonic.svg', dark: 'file:../../icons/rephonic.dark.svg' },
 		group: ['input'],
-		version: 1,
+		version: [1, 1.1],
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description: 'Search podcasts and retrieve Rephonic data',
 		defaults: { name: 'Rephonic' },
@@ -82,7 +83,6 @@ export class Rephonic implements INodeType {
 								url: '/api/search/podcasts/',
 								qs: {
 									query: '={{$parameter.query || undefined}}',
-									filters: '={{$parameter.filters || undefined}}',
 									mode: '={{$parameter.mode}}',
 									page: 1,
 									per_page: '={{$parameter.returnAll ? 100 : Math.min(100, $parameter.limit)}}',
@@ -195,10 +195,36 @@ export class Rephonic implements INodeType {
 					'Comma-separated Rephonic search filters. See https://rephonic.com/developers/search-filters.',
 				displayOptions: {
 					show: {
+						'@version': [1],
 						resource: ['podcast'],
 						operation: ['getMany'],
 					},
 				},
+			},
+			{
+				displayName: 'Options',
+				name: 'options',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						'@version': [1.1],
+						resource: ['podcast'],
+						operation: ['getMany'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Filters',
+						name: 'filters',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. active:is:true,languages:any:en',
+						description:
+							'Comma-separated Rephonic search filters. See https://rephonic.com/developers/search-filters.',
+					},
+				],
 			},
 			{
 				displayName: 'Return All',
@@ -215,6 +241,7 @@ export class Rephonic implements INodeType {
 				routing: {
 					send: {
 						paginate: true,
+						preSend: [applySearchFilters],
 					},
 					operations: {
 						pagination: {
@@ -223,7 +250,7 @@ export class Rephonic implements INodeType {
 								request: {
 									qs: {
 										query: '={{$parameter.query || undefined}}',
-										filters: '={{$parameter.filters || undefined}}',
+										filters: '={{$request.qs.filters}}',
 										mode: '={{$parameter.mode}}',
 										page: '={{$response.body?.page ? $response.body.page + 1 : 1}}',
 										per_page: '={{$parameter.returnAll ? 100 : Math.min(100, $parameter.limit)}}',

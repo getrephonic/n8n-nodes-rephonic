@@ -32,7 +32,9 @@ The package contains no embedded keys. Keys belong in n8n credentials, rather th
 
 ### Search and pagination
 
-Supply a **Query**, **Filters**, or both. Filters use the [service's documented syntax](https://rephonic.com/developers/search-filters), for example `active:is:true,languages:any:en`.
+Supply a **Query**, choose **Options → Add Option → Filters**, or use both. Filters use the [service's documented syntax](https://rephonic.com/developers/search-filters), for example `active:is:true,languages:any:en`.
+
+Existing workflows keep node version 1 and their saved filters. New nodes use version 1.1 with **Options → Filters**. If you upgrade an existing node to version 1.1, copy its Filters value into **Options → Filters**.
 
 By default, **Get Many** returns up to 50 results. Increase **Limit** or enable **Return All**. The node follows pages while the API reports more results and caps each page at 100. Returning all matches can use many API requests and is still subject to the service's search and account limits.
 

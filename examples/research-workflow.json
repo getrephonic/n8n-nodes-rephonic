@@ -15,15 +15,17 @@
 				"operation": "getMany",
 				"query": "climate",
 				"mode": "topics",
-				"filters": "active:is:true,languages:any:en",
 				"returnAll": false,
 				"limit": 3,
-				"output": "raw"
+				"output": "raw",
+				"options": {
+					"filters": "active:is:true,languages:any:en"
+				}
 			},
 			"id": "search",
 			"name": "Find podcasts",
 			"type": "n8n-nodes-rephonic.rephonic",
-			"typeVersion": 1,
+			"typeVersion": 1.1,
 			"position": [280, 0]
 		},
 		{
@@ -36,7 +38,7 @@
 			"id": "details",
 			"name": "Get podcast details",
 			"type": "n8n-nodes-rephonic.rephonic",
-			"typeVersion": 1,
+			"typeVersion": 1.1,
 			"position": [560, 0]
 		},
 		{
@@ -47,7 +49,7 @@
 			"id": "quota",
 			"name": "Check API quota",
 			"type": "n8n-nodes-rephonic.rephonic",
-			"typeVersion": 1,
+			"typeVersion": 1.1,
 			"position": [280, 240]
 		}
 	],

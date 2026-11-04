@@ -4,7 +4,7 @@
 
 - Integration name: Rephonic
 - npm package: n8n-nodes-rephonic
-- Version: 0.1.0
+- Version: 0.1.1
 - Website: https://rephonic.com
 - Source repository: https://github.com/getrephonic/n8n-nodes-rephonic
 - Documentation: https://github.com/getrephonic/n8n-nodes-rephonic#readme

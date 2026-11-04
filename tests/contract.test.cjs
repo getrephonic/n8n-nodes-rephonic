@@ -39,6 +39,7 @@ Module._extensions['.ts'] = function (module, filename) {
 const { [brand]: Node } = require(`../nodes/${brand}/${brand}.node.ts`);
 const { [`${brand}Api`]: Credential } = require(`../credentials/${brand}Api.credentials.ts`);
 const { formatOutput } = require(`../nodes/${brand}/output.ts`);
+const { applySearchFilters } = require(`../nodes/${brand}/search.ts`);
 const node = new Node().description;
 const credential = new Credential();
 const properties = node.properties;
@@ -62,7 +63,7 @@ function context(parameter = {}, body = {}) {
 	return {
 		$parameter: {
 			query: 'climate',
-			filters: '',
+			options: {},
 			mode: 'topics',
 			limit: 10,
 			returnAll: false,
@@ -155,12 +156,56 @@ test('return all follows more but stops on either a final or empty page', () => 
 	);
 });
 
-test('query, filter and search-mode values are passed without rewriting input', () => {
-	const filters = 'active:is:true,languages:any:en';
-	assert.equal(evaluate(paging.request.qs.filters, context({ query: '', filters })), filters);
-	assert.equal(evaluate(paging.request.qs.query, context({ query: '', filters })), undefined);
-	for (const mode of properties.find((p) => p.name === 'mode').options) {
-		assert.equal(evaluate(paging.request.qs.mode, context({ mode: mode.value })), mode.value);
+test('new nodes group optional filters while preserving the old node layout', () => {
+	assert.deepEqual(node.version, [1, 1.1]);
+	const options = properties.find((p) => p.name === 'options');
+	assert.equal(options.type, 'collection');
+	assert.deepEqual(options.default, {});
+	assert.deepEqual(options.displayOptions.show['@version'], [1.1]);
+	assert.equal(options.options.find((p) => p.name === 'filters').type, 'string');
+	assert.deepEqual(
+		properties.find((p) => p.name === 'filters').displayOptions.show['@version'],
+		[1],
+	);
+	assert.equal(properties.find((p) => p.name === 'query').type, 'string');
+});
+
+test('search resolves the correct filter parameter for new and saved legacy nodes', async () => {
+	assert.ok(
+		properties
+			.find((p) => p.name === 'returnAll')
+			.routing.send.preSend.includes(applySearchFilters),
+	);
+	for (const version of [1, 1.1]) {
+		const expected = version === 1 ? 'filters' : 'options.filters';
+		for (const filters of ['', 'active:is:true,languages:any:en']) {
+			const result = await applySearchFilters.call(
+				{
+					getNode: () => ({ typeVersion: version }),
+					getNodeParameter: (name) => {
+						assert.equal(name, expected);
+						return filters;
+					},
+				},
+				{ method: 'GET', url: '/search', qs: { page: 2, query: 'climate' } },
+			);
+			assert.equal(result.qs.filters, filters || undefined);
+			assert.equal(
+				evaluate(paging.request.qs.filters, { $request: { qs: result.qs } }),
+				filters || undefined,
+			);
+			assert.equal(result.qs.page, 2);
+			assert.equal(result.qs.query, 'climate');
+		}
+	}
+});
+
+test('query and search-mode values reach the first and subsequent pages', () => {
+	for (const request of [search.routing.request, paging.request]) {
+		assert.equal(evaluate(request.qs.query, context({ query: '' })), undefined);
+		for (const mode of properties.find((p) => p.name === 'mode').options) {
+			assert.equal(evaluate(request.qs.mode, context({ mode: mode.value })), mode.value);
+		}
 	}
 });
 
